@@ -78,7 +78,7 @@ function LeakFunnel({ isInView }: { isInView: boolean }) {
         strokeWidth="1.5"
         initial={{ opacity: 0, scaleY: 0 }}
         animate={isInView ? { opacity: 1, scaleY: 1 } : {}}
-        transition={{ duration: 0.7, ease: EASE, delay: 0.2, origin: "top" }}
+        transition={{ duration: 0.7, ease: EASE, delay: 0.2 }}
         style={{ transformOrigin: "center top" }}
       />
       {/* Stage 2 — leads */}
@@ -191,10 +191,10 @@ function LeakFunnel({ isInView }: { isInView: boolean }) {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 1.4, duration: 0.6 }}
       >
-        <rect x="84" y="328" width="152" height="36" rx="8"
+        <rect x="80" y="328" width="170" height="36" rx="8"
           fill="var(--color-destructive)" fillOpacity={0.09}
           stroke="var(--color-destructive)" strokeOpacity={0.25} strokeWidth="1" />
-        <text x="160" y="348" textAnchor="middle"
+        <text x="163" y="348" textAnchor="middle"
           fill="var(--color-destructive)" fontSize="10"
           fontWeight="800" fontFamily="system-ui, sans-serif" letterSpacing="0.08em">
           9,992 LOST OPPORTUNITIES

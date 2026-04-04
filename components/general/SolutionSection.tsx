@@ -210,8 +210,8 @@ function SpeedGauge({ active }: { active: boolean }) {
 
       {/* Needle */}
       <motion.line
-        x1="120" y1="130"
-        x2="120" y2="55"
+        x1="128" y1="100"
+        x2="135" y2="55"
         stroke="var(--color-foreground)" strokeWidth="2" strokeLinecap="round"
         style={{ transformOrigin: "120px 130px" }}
         initial={{ rotate: needleFrom }}
@@ -478,7 +478,7 @@ export function SolutionSection() {
                 {/* CTA */}
                 <Button
                   size="lg"
-                  className="group relative h-12 px-6 w-fit rounded-full bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all duration-200 hover:scale-[1.03] active:scale-95 shadow-lg shadow-primary/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="group relative h-12 px-6 w-fit rounded-md bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all duration-200 hover:scale-[1.03] active:scale-95 shadow-lg shadow-primary/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Start a Project
@@ -487,10 +487,7 @@ export function SolutionSection() {
                       aria-hidden="true"
                     />
                   </span>
-                  <span
-                    className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer"
-                    aria-hidden="true"
-                  />
+                
                 </Button>
               </div>
             </div>

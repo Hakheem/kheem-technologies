@@ -3,6 +3,11 @@ import { Hero } from "@/components/layout/HeroSection";
 import { MainCta } from "@/components/general/MainCTA";
 import { ProblemSection } from "@/components/general/ProblemSection";
 import { SolutionSection } from "@/components/general/SolutionSection";
+import { ServicesSection } from "@/components/general/ServicesSection";
+import { ProcessSection } from "@/components/general/Process";
+import { WorkSection } from "@/components/general/WorkSection";
+import { TestimonialsSection } from "@/components/general/Testimonial";
+import { FinalCTASection } from "@/components/general/FinalCTA";
 
 export default function Home() {
   return (
@@ -11,6 +16,11 @@ export default function Home() {
       <WhoIsThisFor />
       <ProblemSection />
       <SolutionSection />
+      <ServicesSection />
+      <ProcessSection />
+      <WorkSection />
+      <TestimonialsSection />
+      <FinalCTASection />
       {/* <MainCta /> */}
     </div>
   );

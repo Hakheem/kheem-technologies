@@ -198,7 +198,7 @@ export function WhoIsThisFor() {
           <span className="text-primary">in any of these?</span>
         </h3>
 
-        <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md">
+        <p className="text-[16px] text-muted-foreground leading max-w-md">
           Not every situation fits a box. Tell us where you're at —
           we'll work out whether we're the right fit and exactly
           what needs to happen next.
@@ -216,14 +216,13 @@ export function WhoIsThisFor() {
             Book a Free 30-Min Call
             <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
           </span>
-          <span className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" aria-hidden="true" />
         </Button>
 
         <Link
-          href="/quote"
+          href="mailto:hello@company.com"
           className="group flex items-center gap-2.5 text-sm font-bold text-foreground transition-opacity duration-200 hover:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
         >
-          Or maybe get you a quote?
+          Or send us an email?
           <span className="block w-4 h-px bg-foreground transition-all duration-500 group-hover:w-8" aria-hidden="true" />
         </Link>
 
