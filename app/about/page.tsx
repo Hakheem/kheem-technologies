@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, Variants, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { FaLinkedin, FaGithub, FaInstagram, FaGlobe, FaDribbble } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { teamMembers, STATS } from "@/lib/data";
 
@@ -71,16 +72,25 @@ const ACCENT_VAR: Record<string, string> = {
   emerald: "var(--color-brand-emerald)",
 };
 
-// ─── Section wrapper ──────────────────────────────────────────────────────────
-function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-8%" });
-  return (
-    <section ref={ref} className={`relative py-24 overflow-hidden ${className}`}>
-      {children}
-    </section>
-  );
-}
+// Icon mapping for socials - handles all platforms
+const getSocialIcon = (platform: string) => {
+  switch (platform) {
+    case "linkedin":
+      return <FaLinkedin className="w-3.5 h-3.5" />;
+    case "github":
+      return <FaGithub className="w-3.5 h-3.5" />;
+    case "instagram":
+      return <FaInstagram className="w-3.5 h-3.5" />;
+    case "dribbble":
+      return <FaDribbble className="w-3.5 h-3.5" />;
+    case "website":
+    case "portfolio":
+    case "live":
+      return <FaGlobe className="w-3.5 h-3.5" />;
+    default:
+      return <FaGlobe className="w-3.5 h-3.5" />;
+  }
+};
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AboutPage() {
@@ -95,6 +105,75 @@ export default function AboutPage() {
 
   const teamRef    = useRef<HTMLDivElement>(null);
   const teamInView = useInView(teamRef, { once: true, margin: "-8%" });
+
+  // Slider state
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(4);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  // Update items per view based on screen size
+  useEffect(() => {
+    const updateItemsPerView = () => {
+      const width = window.innerWidth;
+      if (width >= 1536) setItemsPerView(4); // 2xl
+      else if (width >= 1024) setItemsPerView(3); // lg
+      else if (width >= 768) setItemsPerView(2); // md
+      else setItemsPerView(1); // mobile
+    };
+
+    updateItemsPerView();
+    window.addEventListener("resize", updateItemsPerView);
+    return () => window.removeEventListener("resize", updateItemsPerView);
+  }, []);
+
+  // Auto-scroll logic
+  useEffect(() => {
+    if (!sliderRef.current || isDragging) return;
+
+    const interval = setInterval(() => {
+      if (sliderRef.current && !isDragging) {
+        const maxScroll = sliderRef.current.scrollWidth - sliderRef.current.clientWidth;
+        const nextScroll = sliderRef.current.scrollLeft + 320;
+        
+        if (nextScroll >= maxScroll) {
+          sliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          sliderRef.current.scrollTo({ left: nextScroll, behavior: "smooth" });
+        }
+        setCurrentIndex(Math.floor(sliderRef.current.scrollLeft / 320));
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isDragging]);
+
+  // Mouse drag handlers for slider
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (sliderRef.current?.offsetLeft || 0));
+    setScrollLeft(sliderRef.current?.scrollLeft || 0);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - (sliderRef.current?.offsetLeft || 0);
+    const walk = (x - startX) * 1.5;
+    if (sliderRef.current) {
+      sliderRef.current.scrollLeft = scrollLeft - walk;
+    }
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -130,7 +209,6 @@ export default function AboutPage() {
                 </div>
               </h1>
 
-              {/* Intro paragraph */}
               <motion.p custom={0.25} variants={fadeUp} initial="hidden" animate={heroInView ? "visible" : "hidden"}
                 className="text-[15px] md:text-base text-muted-foreground leading-relaxed max-w-xl">
                 Kheem is a digital systems studio based in Nairobi. We build the websites, apps,
@@ -140,7 +218,6 @@ export default function AboutPage() {
               </motion.p>
             </div>
 
-            {/* Stats */}
             <motion.div custom={0.32} variants={fadeUp} initial="hidden" animate={heroInView ? "visible" : "hidden"}
               className="flex items-center gap-10 lg:flex-col lg:items-end lg:gap-6 shrink-0">
               {STATS.map((s) => (
@@ -223,7 +300,7 @@ export default function AboutPage() {
             </div>
 
             <motion.p custom={0.24} variants={fadeUp} initial="hidden" animate={diffInView ? "visible" : "hidden"}
-              className="text-[15px] text-muted-foreground leading-relaxed max-w-sm lg:text-right">
+              className="text-[15px] text-muted-foreground leading-relaxed max-w-md lg:text-right">
               We're not different because we say we are. We're different because of
               the specific choices we've made about how we work.
             </motion.p>
@@ -251,7 +328,6 @@ export default function AboutPage() {
                     {d.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{d.body}</p>
-                  {/* Bottom accent */}
                   <div className="mt-5 h-0.5 w-0 group-hover:w-full rounded-full transition-all duration-500" style={{ background: accent }} aria-hidden="true" />
                 </motion.div>
               );
@@ -260,10 +336,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Team ──────────────────────────────────────────────────────────── */}
+      {/* ── Team Slider ────────────────────────────────────────────────────── */}
       <section ref={teamRef} className="relative py-24 overflow-hidden">
         <div className="container mx-auto px-6 max-w-7xl">
-
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-14">
             <div>
               <motion.div custom={0} variants={fadeUp} initial="hidden" animate={teamInView ? "visible" : "hidden"}
@@ -285,13 +360,22 @@ export default function AboutPage() {
             </div>
 
             <motion.p custom={0.24} variants={fadeUp} initial="hidden" animate={teamInView ? "visible" : "hidden"}
-              className="text-[15px] text-muted-foreground leading-relaxed max-w-sm lg:text-right">
+              className="text-[15px] text-muted-foreground leading-relaxed max-w-md lg:text-right">
               We're intentionally small. It means every client gets our full attention —
               not a rotating cast of juniors.
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Slider Container */}
+          <div
+            ref={sliderRef}
+            className="flex gap-6 overflow-x-auto scroll-smooth cursor-grab active:cursor-grabbing hide-scrollbar"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+          >
             {teamMembers.map((member, i) => (
               <motion.div
                 key={member.name}
@@ -299,29 +383,95 @@ export default function AboutPage() {
                 variants={fadeUp}
                 initial="hidden"
                 animate={teamInView ? "visible" : "hidden"}
-                className="group flex flex-col gap-5 rounded-2xl border border-border bg-card p-7 hover:border-primary/30 transition-all duration-400"
+                className="relative flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] 2xl:w-[calc(25%-18px)] group/card"
               >
-                {/* Avatar */}
-                <div className="w-14 h-14 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
-                  <span className="title text-lg font-bold text-primary">
-                    {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                  </span>
+                {/* Image Container */}
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden">
+                  <motion.div
+                    className="relative w-full h-full"
+                    whileHover={{ scale: 1.08 }}
+                    transition={{ duration: 0.6, ease: EASE }}
+                  >
+                    <Image
+                      src={member.image}
+                      alt={`${member.name} - ${member.role}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw"
+                      className="object-cover"
+                    />
+                  </motion.div>
+                  
+                  {/* Primary Color Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Social Icons - Top Right (visible on hover) - Shows max 3 icons */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-all duration-300 translate-x-2 group-hover/card:translate-x-0">
+                    {member.socials && Object.entries(member.socials).slice(0, 3).map(([platform, url]) => (
+                      <a
+                        key={platform}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-background/90 backdrop-blur-sm text-foreground hover:text-primary transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {getSocialIcon(platform)}
+                      </a>
+                    ))}
+                  </div>
+                  
+                  {/* Content Overlay - Bottom */}
+                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 opacity-0 group-hover/card:translate-y-0 group-hover/card:opacity-100 transition-all duration-500">
+                    {/* Name */}
+                    <h3 className="font-bold text-xl leading-snug tracking-tight mb-1 text-white">
+                      {member.name}
+                    </h3>
+                    
+                    {/* Role */}
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary mb-2">
+                      {member.role}
+                    </p>
+                    
+                    {/* Bio */}
+                    <p className="text-xs text-white/80 leading-relaxed mb-3 line-clamp-2">
+                      {member.bio}
+                    </p>
+                    
+                    {/* Email Link */}
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="text-xs text-white/70 hover:text-white transition-colors font-medium inline-flex items-center gap-1.5 group/link"
+                    >
+                      <span>{member.email}</span>
+                      <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" />
+                    </a>
+                  </div>
                 </div>
-
-                <div>
-                  <h3 className="font-bold text-foreground text-base leading-snug mb-1">{member.name}</h3>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">{member.role}</p>
-                </div>
-
-                <a
-                  href={`mailto:${member.email}`}
-                  className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-medium mt-auto"
-                >
-                  {member.email}
-                </a>
               </motion.div>
             ))}
           </div>
+
+          {/* Slider Indicators */}
+          {teamMembers.length > itemsPerView && (
+            <div className="flex justify-center gap-2 mt-8">
+              {Array.from({ length: Math.ceil(teamMembers.length / itemsPerView) }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    if (sliderRef.current) {
+                      sliderRef.current.scrollTo({
+                        left: i * sliderRef.current.clientWidth,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    currentIndex === i ? "w-8 bg-primary" : "w-4 bg-border hover:bg-primary/50"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -359,6 +509,11 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <style jsx global>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </main>
   );
 }

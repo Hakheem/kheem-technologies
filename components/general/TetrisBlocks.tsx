@@ -131,7 +131,7 @@ export const TetrisBlocks = memo(function TetrisBlocks({
             <motion.g
               key={i}
               initial={{ opacity: 0 }}
-              animate={
+              animate={ 
                 shouldReduceMotion
                   ? { opacity: piece.opacity }
                   : {

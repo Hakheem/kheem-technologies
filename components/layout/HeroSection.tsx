@@ -173,7 +173,7 @@ export function Hero() {
           </motion.p>
 
           <motion.div custom={0.54} variants={fadeUp} initial="hidden" animate="visible" className="flex items-center gap-4 mb-10">
-            <Button size="lg" className="group relative h-12 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-sm overflow-hidden transition-all duration-200 active:scale-98 shadow-md shadow-primary/15">
+            <Button size="lg" className="group relative h-12 px-5 md:px-8 rounded-md bg-primary text-primary-foreground font-semibold text-sm overflow-hidden transition-all duration-200 active:scale-98 shadow-md shadow-primary/15">
               <span className="relative z-10 flex items-center gap-2">
                 Start Your Build
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -181,7 +181,7 @@ export function Hero() {
             </Button>
 
            {/* View Work */}
-<Button size="lg" variant="outline" className="group relative h-12 px-8 rounded-md overflow-hidden transition-all duration-200 active:scale-99">
+<Button size="lg" variant="outline" className="group relative h-12 px-5 md:px-8 rounded-md overflow-hidden transition-all duration-200 active:scale-99">
   <Link href="/work" className="flex items-center gap-3 font-semibold text-sm">
     See Our Work
     {/* <span className="block w-6 h-px bg-current transition-all duration-500 group-hover:w-8" /> */}

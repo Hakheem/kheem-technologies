@@ -52,12 +52,10 @@ function ServiceRow({
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
     >
-      <Link
-        href={service.href}
+      <div
         className="group block"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        aria-label={`Learn more about ${service.title}`}
       >
         {/* Top border */}
         <div className="relative h-px w-full bg-border overflow-hidden">
@@ -70,7 +68,7 @@ function ServiceRow({
           />
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-start gap-5 md:gap-0 py-7 md:py-8">
+        <div className="flex flex-col md:flex-row md:items-start gap-5 md:gap-0 py-8">
 
           {/* Index + tag */}
           <div className="md:w-40 shrink-0 flex md:flex-col gap-3 md:gap-1.5">
@@ -113,8 +111,8 @@ function ServiceRow({
             </div>
 
             {/* Deliverables + arrow */}
-            <div className="md:w-52 shrink-0 flex flex-col gap-3">
-              {/* Deliverables — appear on hover */}
+            <div className="md:w-52 justify-start shrink-0 flex flex-col gap-3">
+              {/* Deliverables */}
               <motion.div
                 className="flex flex-wrap gap-1.5"
                 animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 6 }}
@@ -130,8 +128,8 @@ function ServiceRow({
                 ))}
               </motion.div>
 
-              {/* Arrow link */}
-              <div className="flex items-center gap-2 mt-auto">
+              {/* Arrow link  */}
+              <Link href={service.href} className="flex items-center gap-2 mt-auto">
                 <motion.span
                   className="text-[10px] font-bold uppercase tracking-[0.18em]"
                   style={{ color: accent }}
@@ -154,11 +152,11 @@ function ServiceRow({
                     aria-hidden="true"
                   />
                 </motion.div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
-      </Link>
+      </div>
     </motion.div>
   );
 }
@@ -171,7 +169,7 @@ export function ServicesSection() {
   return (
     <section
       ref={ref}
-      className="relative py-28 overflow-hidden bg-background"
+      className="relative py-20 md:py-24 overflow-hidden bg-background"
       aria-labelledby="services-heading"
     >
       {/* Ambient glow — top right */}
@@ -234,10 +232,10 @@ export function ServicesSection() {
             variants={fadeUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="text-[15px] text-muted-foreground leading-relaxed max-w-sm lg:text-right"
+            className="text-[15px] text-muted-foreground leading-relaxed max-w-md lg:text-right"
           >
             We don't sub out or stitch together freelancers.
-            Strategy, design, engineering, and brand — in-house,
+            Strategy, design, engineering, and brand; in-house,
             start to finish.
           </motion.p>
         </div>
@@ -268,7 +266,7 @@ export function ServicesSection() {
           <p className="text-sm text-muted-foreground">
             Not sure which service fits your situation?{" "}
             <Link
-              href="/quote"
+              href="/contact"
               className="text-primary font-semibold underline underline-offset-4 hover:opacity-70 transition-opacity"
             >
               Tell us what you need
@@ -288,4 +286,5 @@ export function ServicesSection() {
     </section>
   );
 }
+
 

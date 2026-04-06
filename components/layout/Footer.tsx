@@ -47,55 +47,63 @@ export function Footer() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ctaRef.current,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ctaRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      gsap.fromTo(
-        ".footer-col",
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      gsap.fromTo(
-        ".footer-bottom",
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 0.6,
-          delay: 0.4,
-          scrollTrigger: {
-            trigger: ".footer-bottom",
-            start: "top 95%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
+      // Animate CTA if it exists
+      if (ctaRef.current) {
+        gsap.fromTo(
+          ctaRef.current,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+      // Animate footer columns if they exist
+      const footerCols = document.querySelectorAll('.footer-col');
+      if (footerCols.length > 0 && contentRef.current) {
+        gsap.fromTo(
+          footerCols,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: contentRef.current,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+      // Animate footer bottom if it exists
+      const footerBottom = document.querySelector('.footer-bottom');
+      if (footerBottom) {
+        gsap.fromTo(
+          footerBottom,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            delay: 0.4,
+            scrollTrigger: {
+              trigger: footerBottom,
+              start: "top 95%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
     }, footerRef);
-
     return () => ctx.revert();
   }, []);
 
@@ -114,7 +122,7 @@ export function Footer() {
       <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-violet/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10">
-      
+
 
         {/* Main Footer Content */}
         <div ref={contentRef} className="container mx-auto px-6 py-16 md:py-20">
@@ -127,7 +135,7 @@ export function Footer() {
               <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-xs">
                 Engineering high-performance digital products for businesses that want more. Strategy, design, and development—under one roof.
               </p>
-              
+
               {/* Contact Info */}
               <div className="space-y-3">
                 <a
@@ -239,7 +247,7 @@ export function Footer() {
               <p className="text-muted-foreground text-xs font-medium tracking-wider">
                 © {new Date().getFullYear()} KHEEM TECHNOLOGIES. ALL RIGHTS RESERVED.
               </p>
-              
+
               <div className="flex items-center gap-6">
                 <Link
                   href="/privacy"

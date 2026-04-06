@@ -37,11 +37,11 @@ export function Navbar() {
     if (isOpen) {
       // Get scrollbar width
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      
+
       // Add padding to body to compensate for scrollbar removal
       document.body.style.overflow = "hidden";
       document.body.style.paddingRight = `${scrollbarWidth}px`;
-      
+
       // Also add padding to any fixed elements that might shift
       const fixedElements = document.querySelectorAll('.fixed');
       fixedElements.forEach((el) => {
@@ -50,7 +50,7 @@ export function Navbar() {
     } else {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
-      
+
       // Reset fixed elements
       const fixedElements = document.querySelectorAll('.fixed');
       fixedElements.forEach((el) => {
@@ -121,37 +121,43 @@ export function Navbar() {
     );
   };
 
-  // 2. Setup SplitText
+
+  // 2. Setup SplitText (wait for fonts to load)
   useEffect(() => {
-    const splitInstances: SplitText[] = [];
-    const lines: Element[] = [];
-
-    const splitElements = [
-      ...refs.links.current.filter(Boolean),
-      ...(refs.contactInfo.current?.querySelectorAll(".split-target") || []),
-    ] as Element[];
-
-    splitElements.forEach((el) => {
-      if (!el) return;
-      const split = new SplitText(el, {
-        type: "lines",
-        linesClass: "split-line",
+    let cancelled = false;
+    function runSplitText() {
+      if (cancelled) return;
+      const splitInstances: SplitText[] = [];
+      const lines: Element[] = [];
+      const splitElements = [
+        ...refs.links.current.filter(Boolean),
+        ...(refs.contactInfo.current?.querySelectorAll(".split-target") || []),
+      ] as Element[];
+      splitElements.forEach((el) => {
+        if (!el) return;
+        const split = new SplitText(el, {
+          type: "lines",
+          linesClass: "split-line",
+        });
+        split.lines.forEach((line) => {
+          gsap.set(line, { y: "100%" });
+          lines.push(line);
+        });
+        splitInstances.push(split);
       });
-
-      split.lines.forEach((line) => {
-        gsap.set(line, { y: "100%" });
-        lines.push(line);
-      });
-
-      splitInstances.push(split);
-    });
-
-    refs.splits.current = splitInstances;
-    refs.allLines.current = lines;
-
+      refs.splits.current = splitInstances;
+      refs.allLines.current = lines;
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(runSplitText);
+    } else {
+      // fallback: run after short delay
+      setTimeout(runSplitText, 300);
+    }
     return () => {
+      cancelled = true;
       refs.timeline.current?.kill();
-      splitInstances.forEach((split) => split.revert());
+      refs.splits.current?.forEach((split) => split.revert());
     };
   }, []);
 
@@ -280,20 +286,22 @@ export function Navbar() {
       {/* --- CLOSED NAV --- */}
       <nav
         ref={refs.nav}
-        className="fixed top-[1%] left-1/2 -translate-x-1/2 w-[95vw] max-w-screen-2xl bg-background/60 backdrop-blur-md border border-border/50 flex items-center justify-between px-6 py-2 shadow rounded-md"
+        className="fixed top-[1%] left-1/2 -translate-x-1/2 w-[98vw] md:w-[95vw] max-w-screen-2xl bg-background/60 backdrop-blur-md border border-border/50 flex items-center justify-between px-3 md:px-6 py-2 shadow rounded-md"
       >
         {/* Logo */}
         <div
           className="relative z-50 cursor-pointer"
           onClick={() => setIsOpen(false)}
         >
+          <Link href='/'>
           <LogoDisplay />
+          </Link>
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2  relative z-50">
+        <div className="flex items-center gap-2 relative z-50">
           <div className="hidden md:flex">
-             <Button className="group relative h-12 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-sm overflow-hidden transition-all duration-200 active:scale-98  ">
+            <Button className="group relative h-12 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-sm overflow-hidden transition-all duration-200 active:scale-98  ">
               <span className="relative z-10 flex items-center">
                 Start a Project
               </span>
@@ -357,8 +365,8 @@ export function Navbar() {
                   }}
                   href={link.href}
                   className={`text-3xl md:text-4xl tracking-tight transition-colors ${pathname === link.href
-                      ? "font-semibold text-primary"
-                      : "font-semibold text-foreground/50 hover:text-primary"
+                    ? "font-semibold text-primary"
+                    : "font-semibold text-foreground/50 hover:text-primary"
                     }`}
                 >
                   {link.name}
@@ -415,24 +423,24 @@ export function Navbar() {
             </div>
 
             {/* Availability */}
-        <div className="flex flex-col gap-1">
-  <p className="split-target text-foreground uppercase text-[11px] font-bold tracking-[0.12em] mb-2">
-    Availability
-  </p>
-  <p className="split-target leading-relaxed  text-foreground/80 ">
-    Ready to scale your digital reach? <span className="split-target text-muted-foreground ">
-    We're open to new projects and collaborations.
+            <div className="flex flex-col gap-1">
+              <p className="split-target text-foreground uppercase text-[11px] font-bold tracking-[0.12em] mb-2">
+                Availability
+              </p>
+              <p className="split-target leading-relaxed  text-foreground/80 ">
+                Ready to scale your digital reach? <span className="split-target text-muted-foreground ">
+                  We're open to new projects and collaborations.
 
-  </span>
-  </p>
-  <Link 
-    href="/contact" 
-    className="split-target flex items-center gap-2 text-primary font-bold text-sm group hover:gap-3 mt-4 transition-all"
-  >
-    Get Started 
-    <ArrowUpRight className="w-4 h-4 transition-transform " />
-  </Link>
-</div>
+                </span>
+              </p>
+              <Link
+                href="/contact"
+                className="split-target flex items-center gap-2 text-primary font-bold text-sm group hover:gap-3 mt-4 transition-all"
+              >
+                Get Started
+                <ArrowUpRight className="w-4 h-4 transition-transform " />
+              </Link>
+            </div>
           </div>
 
           {/* RIGHT: Images - desktop only */}

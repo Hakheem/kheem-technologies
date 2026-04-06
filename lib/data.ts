@@ -13,10 +13,44 @@ export const contactInfo = {
   whatsappLink: "https://wa.me/254769403162",
 };
 
+// ─── Team Members ─────────────────────────────────────────────────────────────
 export const teamMembers = [
-  { name: "John Doe", role: "Lead Developer", email: "john@kheem.tech" },
-  { name: "Juan Rodriguez", role: "UI/UX Designer", email: "juan@kheem.tech" },
-  { name: "Sarah Chen", role: "Project Manager", email: "sarah@kheem.tech" },
+  {
+    name: "Hector John",
+    role: "Lead Developer",
+    email: "hakheem.dev@gmail.com",
+    image: "/images/team/hector.png",
+    bio: "Full-stack architect with 8+ years of experience building scalable web applications. Passionate about clean code and performance optimization.",
+    socials: {
+      linkedin: "https://linkedin.com/in/johndoe",
+      github: "https://github.com/Hakheem",
+      website: "https://hector-john.vercel.app",
+      dribbble: "https://dribbble.com/johndoe",
+    },
+  },
+  {
+    name: "Juan Rodriguez",
+    role: "UI/UX Designer",
+    email: "juan@kheem.tech",
+    image: "/images/team/hector.png",
+    bio: "Designer who codes. Creates intuitive interfaces that users love. Specializes in design systems and user research.",
+    socials: {
+      linkedin: "https://linkedin.com/in/juanrodriguez",
+      dribbble: "https://dribbble.com/juanrodriguez",
+      instagram: "https://instagram.com/juanrodriguez",
+    },
+  },
+  {
+    name: "Sarah Chen",
+    role: "Project Manager",
+    email: "sarah@kheem.tech",
+    image: "/images/team/hector.png",
+    bio: "Certified Scrum Master ensuring projects ship on time and on budget. Bridge between clients and the technical team.",
+    socials: {
+      linkedin: "https://linkedin.com/in/sarahchen",
+      github: "https://github.com/sarahchen",
+    },
+  },
 ];
 
 export const socialLinks = [
@@ -213,7 +247,23 @@ export const processSteps = [
 ];
 
 // ─── Work / Case Studies ──────────────────────────────────────────────────────
-export const caseStudies = [
+export type CaseStudy = {
+  index: string;
+  client: string;
+  industry: string;
+  type: string;
+  image: string;
+  challenge: string;
+  solution: string;
+  result: string;
+  tags: string[];
+  accentColor: "primary" | "violet" | "emerald";
+  caseStudyLink?: string; // Optional: Link to internal page
+  externalLink?: string;  // Optional: Link to live site
+  href: string;           // Kept for backward compatibility if needed
+};
+
+export const caseStudies: CaseStudy[] = [
   {
     index: "01",
     client: "WaziRent",
@@ -224,19 +274,23 @@ export const caseStudies = [
     solution: "A full rental management platform: digital leases, automated rent reminders, M-Pesa payment integration, and a landlord dashboard with occupancy tracking.",
     result: "Reduced payment disputes by 80% and cut admin time for landlords by half.",
     tags: ["Web App", "Payments", "Dashboard"],
+    caseStudyLink: "/work/wazirent",
+    externalLink: "https://wazirent.com",
     href: "/work/wazirent",
     accentColor: "primary",
   },
   {
     index: "02",
-    client: "Essentia Safari",
+    client: "Barabara Voyagers",
     industry: "Tourism",
     type: "Website + Booking System",
-    image: "/images/essentia.png",
+    image: "/images/Barabara Voyagers New.png",
     challenge: "A premium safari company with a website that looked anything but premium — no online bookings, no trust signals, losing clients to better-looking competitors.",
     solution: "A high-end website redesign with immersive imagery, an integrated booking and quote system, and SEO foundations that put them in front of the right searches.",
     result: "3× increase in inbound enquiries within 60 days of launch.",
     tags: ["Redesign", "Booking", "SEO"],
+    caseStudyLink: "/work/essentia",
+    externalLink: "https://essentiasafari.com",
     href: "/work/essentia",
     accentColor: "emerald",
   },
@@ -245,11 +299,13 @@ export const caseStudies = [
     client: "Kinimatic",
     industry: "Fitness & Wellness",
     type: "Brand Identity + Website",
-    image: "/images/kinimatic.png",
+    image: "/images/wazirent.png",
     challenge: "A new fitness brand with no visual identity, no web presence, and no way to communicate what made them different in a saturated market.",
     solution: "End-to-end brand build: logo, color system, typography, and a conversion-focused website with class scheduling and membership sign-up flows.",
     result: "Sold out first cohort within two weeks of launch. Brand now recognized locally.",
     tags: ["Brand", "Web Design", "Identity"],
+    caseStudyLink: "/work/kinimatic",
+    // externalLink: "https://kinimatic.com", // Example: leave out to test "View Live" button hiding
     href: "/work/kinimatic",
     accentColor: "violet",
   },
@@ -263,6 +319,7 @@ export const caseStudies = [
     solution: "A custom job management system with technician assignment, GPS check-ins, job status tracking, client-facing report generation, and invoice automation.",
     result: "Operations team reduced from 4 coordinators to 2. Zero missed jobs in first quarter after launch.",
     tags: ["Custom System", "Automation", "Internal Tool"],
+    caseStudyLink: "/work/fieldops",
     href: "/work/fieldops",
     accentColor: "primary",
   },
@@ -276,7 +333,7 @@ export const testimonials = [
     name: "Aisha Njoroge",
     title: "Founder, WaziRent",
     outcome: "80% drop in payment disputes",
-    avatar: "/images/avatars/aisha.jpg",
+    avatar: "/images/aisha.jpg",
     index: "01",
   },
   {
@@ -285,7 +342,7 @@ export const testimonials = [
     name: "Kris Kellaway",
     title: "President, Kinimatic",
     outcome: "First cohort sold out in 2 weeks",
-    avatar: "/images/avatars/kris.jpg",
+    avatar: "/images/kris.jpg",
     index: "02",
   },
   {
@@ -294,7 +351,7 @@ export const testimonials = [
     name: "Kennedy Mallya",
     title: "President, Essentia Safari",
     outcome: "3× inbound enquiries in 60 days",
-    avatar: "/images/avatars/kennedy.jpg",
+    avatar: "/images/kennedy.jpg",
     index: "03",
   },
   {
@@ -303,7 +360,7 @@ export const testimonials = [
     name: "Marcus Odhiambo",
     title: "CEO, FieldOps",
     outcome: "Coordination headcount cut by 50%",
-    avatar: "/images/avatars/marcus.jpg",
+    avatar: "/images/marcus.jpg",
     index: "04",
   },
   {
@@ -312,7 +369,7 @@ export const testimonials = [
     name: "Fatima Al-Hassan",
     title: "Director, Berco Inc.",
     outcome: "Project delivered on time, under budget",
-    avatar: "/images/avatars/fatima.jpg",
+    avatar: "/images/fatima.jpg",
     index: "05",
   },
   {
@@ -321,7 +378,12 @@ export const testimonials = [
     name: "David Muriithi",
     title: "Co-Founder, Heave Corp",
     outcome: "3 direct referrals post-launch",
-    avatar: "/images/avatars/david.jpg",
+    avatar: "/images/david.jpg",
     index: "06",
   },
 ];
+
+
+
+
+

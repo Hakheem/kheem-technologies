@@ -210,7 +210,7 @@ function SpeedGauge({ active }: { active: boolean }) {
 
       {/* Needle */}
       <motion.line
-        x1="128" y1="100"
+        x1="130" y1="100"
         x2="135" y2="55"
         stroke="var(--color-foreground)" strokeWidth="2" strokeLinecap="round"
         style={{ transformOrigin: "120px 130px" }}
@@ -236,7 +236,7 @@ function SpeedGauge({ active }: { active: boolean }) {
         98
       </motion.text>
       <motion.text
-        x="120" y="132"
+        x="120" y="155"
         textAnchor="middle" fontSize="8" fontWeight="600"
         fill="var(--color-brand-emerald)" fontFamily="system-ui" letterSpacing="0.08em"
         initial={{ opacity: 0 }}
@@ -288,7 +288,7 @@ export function SolutionSection() {
   return (
     <section
       ref={ref}
-      className="relative py-28 overflow-hidden bg-background"
+      className="relative py-20 md:py-24 overflow-hidden bg-background"
       aria-labelledby="solution-heading"
     >
       {/* Ambient primary glow — right */}
@@ -478,7 +478,7 @@ export function SolutionSection() {
                 {/* CTA */}
                 <Button
                   size="lg"
-                  className="group relative h-12 px-6 w-fit rounded-md bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all duration-200 hover:scale-[1.03] active:scale-95 shadow-lg shadow-primary/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="group relative h-12 px-6 w-fit rounded-md bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all duration-200 hover:scale-[1.03] active:scale-95 shadow-sm shadow-primary/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Start a Project

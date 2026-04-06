@@ -8,6 +8,7 @@ import { ProcessSection } from "@/components/general/Process";
 import { WorkSection } from "@/components/general/WorkSection";
 import { TestimonialsSection } from "@/components/general/Testimonial";
 import { FinalCTASection } from "@/components/general/FinalCTA";
+import { TrustedSection } from "@/components/general/TrustedBy";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <ProblemSection />
       <SolutionSection />
       <ServicesSection />
+      <TrustedSection/>
       <ProcessSection />
       <WorkSection />
       <TestimonialsSection />

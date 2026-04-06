@@ -200,7 +200,7 @@ export function ProcessSection() {
             variants={fadeUp}
             initial="hidden"
             animate={headerInView ? "visible" : "hidden"}
-            className="text-[15px] text-muted-foreground leading-relaxed max-w-sm lg:text-right"
+            className="text-[15px] text-muted-foreground leading-relaxed max-w-md lg:text-right"
           >
             Every project follows the same five-stage process —
             so you always know where you are, what's next,
@@ -209,10 +209,9 @@ export function ProcessSection() {
         </div>
 
         {/* ── Two-column layout: steps left, sticky summary right ─────────── */}
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
-
-          {/* Steps */}
-          <div className="flex-1" role="list" aria-label="Project process steps">
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+          {/* Steps - left column */}
+          <div className="flex-1 min-w-0" role="list" aria-label="Project process steps">
             {processSteps.map((step, i) => (
               <div key={step.step} role="listitem">
                 <ProcessStep
@@ -223,8 +222,8 @@ export function ProcessSection() {
             ))}
           </div>
 
-          {/* Sticky side panel */}
-          <div className="lg:w-72 shrink-0">
+          {/* Sticky side panel - right column */}
+          <div className="lg:w-80 shrink-0 lg:self-start">
             <div className="lg:sticky lg:top-28">
               <motion.div
                 custom={0.35}
@@ -259,7 +258,6 @@ export function ProcessSection() {
               </motion.div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

@@ -1,327 +1,293 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, Variants, useInView } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, ExternalLink, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { caseStudies } from "@/lib/data";
 
-// ─── Animation presets ────────────────────────────────────────────────────────
-const EASE = [0.76, 0, 0.24, 1] as const;
-
-const fadeUp: Variants = {
-  hidden:  { opacity: 0, y: 24 },
-  visible: (d = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.8, ease: EASE, delay: d },
-  }),
-};
-
-const maskReveal: Variants = {
-  hidden:  { y: "108%", rotate: 1 },
-  visible: (d = 0) => ({
-    y: "0%", rotate: 0,
-    transition: { duration: 1, ease: EASE, delay: d },
-  }),
-};
-
+// ─── Constants & Colors ───────────────────────────────────────────────────────
 const ACCENT: Record<string, string> = {
   primary: "var(--color-primary)",
   violet:  "var(--color-brand-violet)",
   emerald: "var(--color-brand-emerald)",
 };
 
-// ─── Case study card ──────────────────────────────────────────────────────────
-function CaseCard({
-  study,
-  delay,
-  isInView,
-}: {
-  study: (typeof caseStudies)[number];
-  delay: number;
-  isInView: boolean;
-}) {
-  const [hovered, setHovered] = useState(false);
-  const accent = ACCENT[study.accentColor] ?? ACCENT.primary;
+// ─── Scrollable Image Component ───────────────────────────────────────────────
+function ScrollableImage({ src, alt, accent }: { src: string; alt: string; accent: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canScroll, setCanScroll] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const checkScroll = () => {
+      setCanScroll(container.scrollHeight > container.clientHeight);
+    };
+
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !isHovering) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      container.scrollTop += e.deltaY;
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [isHovering]);
 
   return (
-    <motion.article
-      custom={delay}
-      variants={fadeUp}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden transition-shadow duration-500 hover:shadow-xl hover:shadow-foreground/6"
+    <div 
+      className="relative w-full h-full overflow-hidden"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
-      {/* ── Image ──────────────────────────────────────────────────────────── */}
-      <div className="relative h-52 bg-muted overflow-hidden">
-        <motion.div
-          className="absolute inset-0"
-          animate={{ scale: hovered ? 1.04 : 1 }}
-          transition={{ duration: 0.7, ease: EASE }}
-        >
-          <Image
-            src={study.image}
-            alt={`${study.client} project preview`}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="object-cover"
-            onError={(e) => {
-              // Fallback to a placeholder block if image missing
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </motion.div>
-
-        {/* Gradient overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `linear-gradient(to top, color-mix(in srgb, ${accent} 18%, var(--color-card)) 0%, transparent 55%)`,
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Project type tag — top left */}
-        <div className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/60">
-          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: accent }} aria-hidden="true" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-foreground">
-            {study.type}
-          </span>
-        </div>
-
-        {/* Index — top right */}
-        <div className="absolute top-4 right-4 text-[10px] font-bold tabular-nums text-foreground/30 tracking-wider">
-          {study.index}
-        </div>
-      </div>
-
-      {/* ── Content ────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col flex-1 p-6">
-
-        {/* Client + industry */}
-        <div className="flex items-start justify-between gap-3 mb-5">
-          <div>
-            <h3 className="title text-xl font-bold text-foreground tracking-tight leading-snug">
-              {study.client}
-            </h3>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              {study.industry}
-            </span>
-          </div>
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1 justify-end">
-            {study.tags.map((t) => (
-              <span
-                key={t}
-                className="text-[8px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Challenge → solution flow */}
-        <div className="space-y-4 flex-1">
-          {/* Challenge */}
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-3 h-px bg-destructive" aria-hidden="true" />
-              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-destructive">
-                The Problem
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {study.challenge}
-            </p>
-          </div>
-
-          {/* Divider with arrow */}
-          <div className="flex items-center gap-3 pl-1" aria-hidden="true">
-            <div className="w-px h-6 bg-border" />
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M5 0 L5 8 M2 5 L5 8 L8 5" stroke="var(--color-border)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-
-          {/* Solution */}
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-3 h-px" style={{ background: accent }} aria-hidden="true" />
-              <span
-                className="text-[9px] font-bold uppercase tracking-[0.18em]"
-                style={{ color: accent }}
-              >
-                What We Built
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {study.solution}
-            </p>
-          </div>
-        </div>
-
-        {/* Result callout */}
-        <div
-          className="mt-5 px-4 py-3 rounded-xl border"
-          style={{
-            background:  `color-mix(in srgb, ${accent} 6%, var(--color-background))`,
-            borderColor: `color-mix(in srgb, ${accent} 22%, var(--color-border))`,
-          }}
-        >
-          <p
-            className="text-[13px] font-bold leading-snug"
-            style={{ color: accent }}
-          >
-            {study.result}
-          </p>
-        </div>
-
-        {/* CTA */}
-        <Link
-          href={study.href}
-          className="group/link mt-5 flex items-center gap-2 w-fit transition-opacity duration-200 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-          aria-label={`View full case study for ${study.client}`}
-        >
-          <span
-            className="text-[10px] font-bold uppercase tracking-[0.18em]"
-            style={{ color: accent }}
-          >
-            View Case Study
-          </span>
-          <ArrowUpRight
-            className="w-3.5 h-3.5 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
-            style={{ color: accent }}
-            aria-hidden="true"
-          />
-        </Link>
-      </div>
-
-      {/* Bottom accent line — expands on hover */}
+      {/* Scrollable container - no visible scrollbar */}
       <div
-        className="absolute inset-x-0 bottom-0 h-0.5 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100"
-        style={{ background: accent }}
-        aria-hidden="true"
-      />
-    </motion.article>
+        ref={containerRef}
+        className="w-full h-full overflow-y-auto scrollbar-hide"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <div className="relative w-full">
+          <Image
+            src={src}
+            alt={alt}
+            width={800}
+            height={1200}
+            className="w-full h-auto"
+            style={{ objectFit: 'cover', objectPosition: 'top' }}
+          />
+        </div>
+      </div>
+      
+      {/* Scroll indicator - shows only if content is scrollable */}
+      {canScroll && (
+        <div 
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none transition-opacity duration-300"
+          style={{ opacity: isHovering ? 0 : 0.7 }}
+        >
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-[8px] font-medium uppercase tracking-wider text-white/60">
+              Scroll
+            </span>
+            <ChevronDown className="w-3 h-3 text-white/60 animate-bounce" />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Main Section Component ───────────────────────────────────────────────────
 export function WorkSection() {
-  const ref      = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-8%" });
+  const [activeCard, setActiveCard] = useState(0);
+  
+  // Get active accent color for subtle ambient effects
+  const activeAccent = ACCENT[caseStudies[activeCard]?.accentColor] ?? ACCENT.primary;
 
   return (
-    <section
-      ref={ref}
-      className="relative py-28 overflow-hidden bg-background"
-      aria-labelledby="work-heading"
-    >
-      {/* Ambient glow */}
-      <div
-        className="absolute top-1/2 -right-48 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, var(--color-brand-emerald), transparent 68%)",
-          opacity: 0.045,
-          filter: "blur(24px)",
-        }}
+    <section className="relative py-20 md:py-24 bg-background overflow-clip">
+      
+      {/* Subtle Animated Background Glow matching the active project */}
+      <motion.div
+        className="absolute top-1/3 -right-32 w-[600px] h-[600px] rounded-full pointer-events-none opacity-10 blur-[120px] mix-blend-screen transition-colors duration-700"
+        animate={{ backgroundColor: activeAccent }}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 container mx-auto px-6 max-w-7xl">
-
-        {/* ── Header ───────────────────────────────────────────────────────── */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-14">
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="container mx-auto px-6 max-w-7xl mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div>
-            <motion.div
-              custom={0}
-              variants={fadeUp}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              className="flex items-center gap-3 mb-6"
-            >
-              <div className="w-5 h-px bg-primary" aria-hidden="true" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-4 h-px bg-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 Our Work
               </span>
-            </motion.div>
-
-            <h2 id="work-heading" className="title font-bold leading-[1.0] tracking-[-0.03em] text-foreground">
-              <div className="overflow-hidden pb-1">
-                <motion.span
-                  custom={0.05}
-                  variants={maskReveal}
-                  initial="hidden"
-                  animate={isInView ? "visible" : "hidden"}
-                  className="block text-[clamp(2rem,4.5vw,3.8rem)]"
-                >
-                  Real problems.
-                </motion.span>
-              </div>
-              <div className="overflow-hidden pb-1">
-                <motion.span
-                  custom={0.15}
-                  variants={maskReveal}
-                  initial="hidden"
-                  animate={isInView ? "visible" : "hidden"}
-                  className="block text-[clamp(2rem,4.5vw,3.8rem)] text-primary"
-                >
-                  Measurable results.
-                </motion.span>
-              </div>
+            </div>
+            <h2 className="title text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-[1.05] tracking-[-0.02em] text-foreground">
+              Real problems.<br/>
+              <span className="text-primary">Measurable results.</span>
             </h2>
           </div>
+          <p className="text-sm text-muted-foreground max-w-sm lg:text-right leading-relaxed z-10">
+            Every project below started with a specific problem. Here's what we built — and what changed.
+          </p>
+        </div>
+      </div>
 
-          <div className="flex flex-col sm:flex-row lg:flex-col lg:items-end gap-4 lg:gap-3">
-            <motion.p
-              custom={0.25}
-              variants={fadeUp}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              className="text-[15px] text-muted-foreground leading-relaxed max-w-sm lg:text-right"
-            >
-              Every project below started with a specific problem.
-              Here's what we built — and what changed.
-            </motion.p>
-            <motion.div
-              custom={0.32}
-              variants={fadeUp}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-            >
-              <Link
-                href="/work"
-                className="group flex items-center gap-2.5 text-sm font-bold text-foreground transition-opacity hover:opacity-60 lg:self-end shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+      {/* ── Sticky Scroll Container ────────────────────────────────────────── */}
+      <div className="relative flex justify-center container mx-auto px-6 max-w-7xl gap-10 lg:gap-16">
+        
+        {/* Left Column: Scrolling Content */}
+        <div className="w-full lg:w-[55%] relative flex flex-col items-start pb-[10vh]">
+          {caseStudies.map((study, index) => {
+            const isActive = activeCard === index;
+            const accent = ACCENT[study.accentColor] ?? ACCENT.primary;
+
+            return (
+              <motion.div 
+                key={study.index} 
+                onViewportEnter={() => setActiveCard(index)}
+                viewport={{ amount: 0.4, margin: "-10% 0px -10% 0px" }}
+                className="w-full min-h-[70vh] flex flex-col justify-center py-16 lg:py-24"
               >
-                See all projects
-                <span className="block w-4 h-px bg-foreground transition-all duration-500 group-hover:w-8" aria-hidden="true" />
-              </Link>
-            </motion.div>
+                <motion.div 
+                  animate={{ opacity: isActive ? 1 : 0.25 }}
+                  transition={{ duration: 0.4 }}
+                  className="w-full"
+                >
+                  {/* Mobile-only Scrollable Image (Hidden on Desktop) */}
+                  <div className="lg:hidden w-full h-[500px] relative rounded-xl overflow-hidden mb-8 border border-border bg-muted">
+                    <ScrollableImage
+                      src={study.image}
+                      alt={study.client}
+                      accent={accent}
+                    />
+                  </div>
+
+                  <div className="flex items-start justify-between gap-4 mb-6">
+                    <div>
+                      <h3 className="title text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-2">
+                        {study.client}
+                      </h3>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        {study.industry}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold tabular-nums text-foreground/20 tracking-widest">
+                      {study.index}
+                    </div>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {study.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-md bg-secondary text-secondary-foreground border border-border/40"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Problem & Solution */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                        The Problem
+                      </p>
+                      <p className="text-sm text-foreground/80 leading-relaxed">
+                        {study.challenge}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: accent }}>
+                        What We Built
+                      </p>
+                      <p className="text-sm text-foreground/80 leading-relaxed">
+                        {study.solution}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Result Highlight */}
+                  <div
+                    className="mb-8 px-5 py-4 rounded-md border border-dashed backdrop-blur-sm"
+                    style={{
+                      background: `color-mix(in srgb, ${accent} 4%, transparent)`,
+                      borderColor: `color-mix(in srgb, ${accent} 30%, var(--color-border))`,
+                    }}
+                  >
+                    <p className="text-sm font-bold leading-snug flex items-center gap-3" style={{ color: accent }}>
+                      <span className="w-2 h-2 rounded-sm bg-current shrink-0" />
+                      {study.result}
+                    </p>
+                  </div>
+
+                  {/* Dynamic Action Buttons */}
+                  <div className="flex flex-wrap items-center gap-4">
+                    {study.caseStudyLink && (
+                      <Link
+                        href={study.caseStudyLink}
+                        className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-md transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring shadow-md"
+                      >
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          Case Study
+                        </span>
+                        <ArrowUpRight className="w-4 h-4" />
+                      </Link>
+                    )}
+
+                    {study.externalLink && (
+                      <a
+                        href={study.externalLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-6 py-3 bg-card text-foreground rounded-md transition-all hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring border border-border shadow-sm group/link"
+                      >
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          View Live
+                        </span>
+                        <ExternalLink className="w-4 h-4 text-muted-foreground group-hover/link:text-foreground transition-colors" />
+                      </a>
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Right Column: Sticky Visuals (Desktop Only) - Now with scrollable image */}
+        <div className="hidden lg:block w-[45%] h-screen sticky top-0 py-[15vh]">
+          <div className="relative w-full h-[70vh] rounded-xl overflow-hidden border border-border/80 bg-muted shadow-2xl shadow-black/10">
+            
+            {/* Simple image container without browser chrome */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCard}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="absolute inset-0"
+              >
+                <ScrollableImage
+                  src={caseStudies[activeCard]?.image || "/images/placeholder.jpg"}
+                  alt={`${caseStudies[activeCard]?.client} project preview`}
+                  accent={activeAccent}
+                />
+                
+                {/* Subtle gradient overlay pulling from project accent color */}
+                <div
+                  className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-10"
+                  style={{ background: `linear-gradient(to bottom right, transparent, ${activeAccent})` }}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
-
-        {/* ── Case study grid ──────────────────────────────────────────────── */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          role="list"
-          aria-label="Case studies"
-        >
-          {caseStudies.map((study, i) => (
-            <div key={study.index} role="listitem">
-              <CaseCard
-                study={study}
-                delay={0.1 + i * 0.1}
-                isInView={isInView}
-              />
-            </div>
-          ))}
-        </div>
-
       </div>
+
+      {/* Hide scrollbar styles */}
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </section>
   );
 }

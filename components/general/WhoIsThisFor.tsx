@@ -81,7 +81,7 @@ export function WhoIsThisFor() {
   const isInView = useInView(ref, { once: true, margin: "-10%" });
 
   return (
-    <section ref={ref} className="relative py-24 overflow-hidden">
+    <section ref={ref} className="relative py-20 md:py-24 overflow-hidden">
       {/* Background accent — subtle right glow */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-violet/5 rounded-full blur-[100px] pointer-events-none" />

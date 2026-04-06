@@ -356,7 +356,7 @@ export function ProblemSection() {
   return (
     <section
       ref={ref}
-      className="relative py-28 overflow-hidden bg-background"
+      className="relative py-20 md:py-24 overflow-hidden bg-background"
       aria-labelledby="problem-heading"
     >
       {/* Ambient red glow — left */}
