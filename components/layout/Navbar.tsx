@@ -122,7 +122,7 @@ export function Navbar() {
   };
 
 
-  // 2. Setup SplitText (wait for fonts to load)
+  // 2. Setup SplitText
   useEffect(() => {
     let cancelled = false;
     function runSplitText() {
@@ -302,9 +302,11 @@ export function Navbar() {
         <div className="flex items-center gap-2 relative z-50">
           <div className="hidden md:flex">
             <Button className="group relative h-12 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-sm overflow-hidden transition-all duration-200 active:scale-98  ">
+            <Link href='/contact'>
               <span className="relative z-10 flex items-center">
                 Start a Project
               </span>
+              </Link>
             </Button>
           </div>
 

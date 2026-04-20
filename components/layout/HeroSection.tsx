@@ -184,7 +184,6 @@ export function Hero() {
 <Button size="lg" variant="outline" className="group relative h-12 px-5 md:px-8 rounded-md overflow-hidden transition-all duration-200 active:scale-99">
   <Link href="/work" className="flex items-center gap-3 font-semibold text-sm">
     See Our Work
-    {/* <span className="block w-6 h-px bg-current transition-all duration-500 group-hover:w-8" /> */}
   </Link>
 </Button>
             

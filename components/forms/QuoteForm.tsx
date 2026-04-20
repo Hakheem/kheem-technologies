@@ -1,289 +1,288 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Loader2, AlertCircle, ChevronDown } from "lucide-react";
 
 const EASE = [0.76, 0, 0.24, 1] as const;
 
-const projectTypes = [
-  { id: "new-build",    label: "New Build",      description: "Starting from scratch"    },
-  { id: "redesign",     label: "Redesign",        description: "Fixing what's there"      },
-  { id: "scaling",      label: "Scaling",         description: "Growing fast"             },
-  { id: "integration",  label: "Integration",     description: "Tools don't talk"         },
-  { id: "expansion",    label: "Expansion",       description: "New markets"              },
-  { id: "clarity",      label: "Not sure yet",    description: "Let's figure it out"      },
+// ─── Unified Service Options (same as Contact page) ─────────────────────────
+const SERVICE_CATEGORIES = {
+  "Development & Build": [
+    { id: "new-build", label: "New Build", description: "From scratch" },
+    { id: "website", label: "Website or Web App", description: "Full stack development" },
+    { id: "mobile", label: "Mobile App", description: "iOS/Android" },
+    { id: "system", label: "Custom Software", description: "Tailored systems" },
+    { id: "unsure-dev", label: "Not sure yet", description: "Let's figure it out together" },
+  ],
+  "Strategy & Design": [
+    { id: "redesign", label: "Redesign", description: "Fixing UX/UI" },
+    { id: "brand", label: "Brand Identity", description: "Design system" },
+    { id: "integration", label: "Integration", description: "System syncing" },
+    { id: "automation", label: "Automation", description: "Workflow efficiency" },
+    { id: "scaling", label: "Scaling", description: "Performance/Growth" },
+    { id: "unsure-strategy", label: "Not sure yet", description: "Consultation first" },
+  ],
+};
+
+// ─── Budget Options ──────────────────────────────────────────────────────────
+const BUDGET_OPTIONS = [
+  { id: "under-50k", label: "Under KES 50k", range: "~$380" },
+  { id: "50k-150k", label: "KES 50k – 150k", range: "$380–$1.1k" },
+  { id: "150k-500k", label: "KES 150k – 500k", range: "$1.1k–$3.8k" },
+  { id: "500k-1m", label: "KES 500k – 1M", range: "$3.8k–$7.7k" },
+  { id: "1m-plus", label: "KES 1M+", range: "$7.7k+" },
+  { id: "discuss", label: "Happy to discuss", range: "Let's talk" },
 ];
 
-const budgetRanges = [
-  { id: "under-500k",    label: "Under KES 50k",       sub: "~$380"    },
-  { id: "50k-150k",      label: "KES 50k – 150k",      sub: "$380–$1.1k" },
-  { id: "150k-500k",     label: "KES 150k – 500k",     sub: "$1.1k–$3.8k" },
-  { id: "500k-1m",       label: "KES 500k – 1M",       sub: "$3.8k–$7.7k" },
-  { id: "1m-plus",       label: "KES 1M+",             sub: "$7.7k+"    },
-  { id: "discuss",       label: "Happy to discuss",    sub: "Let's talk" },
+// ─── Timeline Options ────────────────────────────────────────────────────────
+const TIMELINE_OPTIONS = [
+  { id: "fast-track", label: "Fast-Track", sub: "2-4 weeks" },
+  { id: "standard", label: "Standard", sub: "1-2 months" },
+  { id: "strategic", label: "Strategic", sub: "3-6 months" },
 ];
 
-const timelines = [
-  { id: "asap",       label: "ASAP",          sub: "Within weeks"   },
-  { id: "1-3months",  label: "1 – 3 months",  sub: "No rush"        },
-  { id: "3-6months",  label: "3 – 6 months",  sub: "Planning ahead" },
-  { id: "6-plus",     label: "6+ months",     sub: "Long-term"      },
-];
+const labelClass = "block text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2.5";
+const inputClass = "w-full px-4 py-3 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-sm font-medium";
+const inputErrorClass = "w-full px-4 py-3 border border-red-500 rounded-md bg-background text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all duration-200 text-sm font-medium";
+const errorMessageClass = "text-xs text-red-500 mt-1.5 flex items-center gap-1";
 
-interface QuoteFormProps {
-  initialType?: string;
-  compact?: boolean; // used when embedded inside a page alongside other content
-}
-
-const inputClass =
-  "w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all duration-200 text-sm font-medium";
-
-const labelClass = "block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2.5";
-
-export function QuoteForm({ initialType = "", compact = false }: QuoteFormProps) {
-  const [formData, setFormData] = useState({
-    name:        "",
-    email:       "",
-    company:     "",
-    projectType: initialType,
-    budget:      "",
-    timeline:    "",
-    message:     "",
+export function QuoteForm() {
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    email: "", 
+    company: "",
+    service: "", 
+    budget: "", 
+    timeline: "", 
+    message: "" 
   });
-
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted,  setIsSubmitted]  = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<keyof typeof SERVICE_CATEGORIES>("Development & Build");
+
+  const validateField = (name: string, value: string): string | null => {
+    switch (name) {
+      case "name": 
+        if (!value.trim()) return "Name is required";
+        if (value.trim().length < 3) return "Name must be at least 3 characters";
+        return null;
+      case "email": 
+        if (!value.trim()) return "Email is required";
+        if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(value)) return "Invalid email";
+        return null;
+      case "service": 
+        if (!value) return "Please select a service";
+        return null;
+      case "message": 
+        if (!value.trim()) return "Please describe your project";
+        if (value.trim().length < 10) return "Please provide more detail";
+        return null;
+      default: return null;
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (touched[name]) {
+      const error = validateField(name, value);
+      setErrors(prev => ({ ...prev, [name]: error }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const error = validateField(name, value);
+    setErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  const handleServiceSelect = (serviceId: string) => {
+    setFormData(prev => ({ ...prev, service: serviceId }));
+    setTouched(prev => ({ ...prev, service: true }));
+    const error = validateField("service", serviceId);
+    setErrors(prev => ({ ...prev, service: error }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: validateField("name", formData.name),
+      email: validateField("email", formData.email),
+      service: validateField("service", formData.service),
+      message: validateField("message", formData.message),
+    };
+    setErrors(newErrors);
+    setTouched({ name: true, email: true, service: true, message: true });
+    return !Object.values(newErrors).some(error => error !== null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1600));
-    console.log("Form submitted:", formData);
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      setErrors({ form: "Configuration error. Please try again later." });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("access_key", accessKey);
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("company", formData.company || "Not specified");
+    formDataToSend.append("service_type", formData.service);
+    formDataToSend.append("budget", formData.budget || "Not specified");
+    formDataToSend.append("timeline", formData.timeline || "Not specified");
+    formDataToSend.append("message", formData.message);
+    formDataToSend.append("subject", `New Quote Request from ${formData.name}`);
+    formDataToSend.append("from_name", "Quote Form");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: formDataToSend });
+      const result = await response.json();
+      if (result.success) {
+        setIsSubmitted(true);
+      } else {
+        setErrors({ form: result.message || "Something went wrong." });
+      }
+    } catch (error) {
+      setErrors({ form: "Network error. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // ── Success state ──────────────────────────────────────────────────────────
   if (isSubmitted) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: EASE }}
-        className="flex flex-col items-center text-center py-16 px-6"
-      >
+      <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: EASE }} className="flex flex-col items-center text-center py-16 px-6">
         <div className="relative w-16 h-16 mb-7">
           <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping" />
           <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border border-primary/25">
             <Check className="w-7 h-7 text-primary" />
           </div>
         </div>
-        <h2 className="title text-2xl font-bold text-foreground mb-3 tracking-tight">
-          Message received.
-        </h2>
-        <p className="text-[15px] text-muted-foreground leading-relaxed max-w-sm mb-8">
-          We'll review your project and get back to you within 24 hours.
-          No automated replies — you'll hear from us directly.
-        </p>
-        <Button
-          variant="outline"
-          onClick={() => window.location.href = "/"}
-          className="rounded-full h-11 px-7 font-bold text-sm"
-        >
-          Back to Home
-        </Button>
+        <h2 className="title text-2xl font-bold text-foreground mb-3 tracking-tight">Quote request received!</h2>
+        <p className="text-[15px] text-muted-foreground leading-relaxed max-w-sm mb-8">We'll review your project and get back to you within 24 hours.</p>
+        <Button variant="outline" onClick={() => window.location.href = "/"} className="rounded-full h-11 px-7 font-bold text-sm">Back to Home</Button>
       </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
-
-      {/* ── Project type ────────────────────────────────────────────────────── */}
-      <div>
-        <label className={labelClass}>What best describes your project? *</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
-          {projectTypes.map((type) => {
-            const active = formData.projectType === type.id;
-            return (
-              <button
-                key={type.id}
-                type="button"
-                onClick={() => setFormData({ ...formData, projectType: type.id })}
-                className={`
-                  relative p-4 text-left rounded-xl border transition-all duration-200 group
-                  ${active
-                    ? "border-primary bg-primary/6 shadow-sm shadow-primary/10"
-                    : "border-border bg-card hover:border-primary/40 hover:bg-muted/30"
-                  }
-                `}
-              >
-                {active && (
-                  <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-white" />
-                  </span>
-                )}
-                <div className={`text-sm font-bold mb-0.5 ${active ? "text-primary" : "text-foreground"}`}>
-                  {type.label}
-                </div>
-                <div className="text-[11px] text-muted-foreground">{type.description}</div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── Name + Email ──────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label htmlFor="name" className={labelClass}>Full Name *</label>
-          <input
-            type="text"
-            id="name"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className={inputClass}
-            placeholder="Jane Kamau"
-          />
+          <label className={labelClass}>Full Name *</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} onBlur={handleBlur} className={errors.name && touched.name ? inputErrorClass : inputClass} placeholder="Jane Kamau" />
+          {errors.name && touched.name && <p className={errorMessageClass}><AlertCircle className="w-3 h-3" />{errors.name}</p>}
         </div>
         <div>
-          <label htmlFor="email" className={labelClass}>Email Address *</label>
-          <input
-            type="email"
-            id="email"
-            required
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className={inputClass}
-            placeholder="jane@company.com"
-          />
+          <label className={labelClass}>Email Address *</label>
+          <input type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} className={errors.email && touched.email ? inputErrorClass : inputClass} placeholder="jane@company.com" />
+          {errors.email && touched.email && <p className={errorMessageClass}><AlertCircle className="w-3 h-3" />{errors.email}</p>}
         </div>
       </div>
 
-      {/* ── Company ──────────────────────────────────────────────────────────── */}
       <div>
-        <label htmlFor="company" className={labelClass}>Company / Project Name</label>
-        <input
-          type="text"
-          id="company"
-          value={formData.company}
-          onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-          className={inputClass}
-          placeholder="Acme Ltd. or 'My startup'"
-        />
+        <label className={labelClass}>Company / Project Name</label>
+        <input type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} placeholder="Acme Ltd. or 'My startup'" />
       </div>
 
-      {/* ── Budget ────────────────────────────────────────────────────────────── */}
+      {/* Service Selection - Tabs with Grid (same as Contact) */}
       <div>
-        <label className={labelClass}>Rough Budget *</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
-          {budgetRanges.map((b) => {
-            const active = formData.budget === b.id;
+        <label className={labelClass}>What are we building? *</label>
+        
+        <div className="flex gap-2 mb-5">
+          {Object.keys(SERVICE_CATEGORIES).map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveCategory(category as keyof typeof SERVICE_CATEGORIES)}
+              className={`px-5 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+                activeCategory === category
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {SERVICE_CATEGORIES[activeCategory].map((s) => {
+            const active = formData.service === s.id;
             return (
               <button
-                key={b.id}
+                key={s.id}
                 type="button"
-                onClick={() => setFormData({ ...formData, budget: b.id })}
-                className={`
-                  p-3.5 text-left rounded-xl border transition-all duration-200
-                  ${active
-                    ? "border-primary bg-primary/6 shadow-sm shadow-primary/10"
-                    : "border-border bg-card hover:border-primary/40 hover:bg-muted/30"
-                  }
-                `}
+                onClick={() => handleServiceSelect(s.id)}
+                className={`p-3.5 text-left cursor-pointer rounded-md border text-sm font-semibold transition-all duration-200 ${
+                  active
+                    ? "border-primary bg-primary/6 text-primary shadow-sm"
+                    : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-muted/30"
+                } ${errors.service && touched.service && !active ? "border-red-500" : ""}`}
               >
-                <div className={`text-[13px] font-bold ${active ? "text-primary" : "text-foreground"}`}>
-                  {b.label}
-                </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">{b.sub}</div>
+                <div className="font-bold">{s.label}</div>
+                <div className="text-[10px] opacity-70 mt-0.5">{s.description}</div>
               </button>
             );
           })}
         </div>
-        <p className="mt-2 text-[11px] text-muted-foreground">
-          No budget yet? That's fine — select "Happy to discuss" and we'll figure it out together.
-        </p>
+        {errors.service && touched.service && <p className={errorMessageClass}><AlertCircle className="w-3 h-3" />{errors.service}</p>}
       </div>
 
-      {/* ── Timeline ─────────────────────────────────────────────────────────── */}
-      <div>
-        <label className={labelClass}>Expected Timeline</label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-          {timelines.map((t) => {
-            const active = formData.timeline === t.id;
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setFormData({ ...formData, timeline: t.id })}
-                className={`
-                  p-3.5 text-left rounded-xl border transition-all duration-200
-                  ${active
-                    ? "border-primary bg-primary/6 shadow-sm shadow-primary/10"
-                    : "border-border bg-card hover:border-primary/40 hover:bg-muted/30"
-                  }
-                `}
-              >
-                <div className={`text-[13px] font-bold ${active ? "text-primary" : "text-foreground"}`}>
-                  {t.label}
-                </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">{t.sub}</div>
-              </button>
-            );
-          })}
+      {/* Budget + Timeline - Side by side */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <label className={labelClass}>Rough Budget</label>
+          <div className="relative">
+            <select name="budget" value={formData.budget} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`}>
+              <option value="">Select a budget range</option>
+              {BUDGET_OPTIONS.map((b) => (<option key={b.id} value={b.id}>{b.label} {b.range && `(${b.range})`}</option>))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>Expected Timeline</label>
+          <div className="relative">
+            <select name="timeline" value={formData.timeline} onChange={handleChange} className={`${inputClass} appearance-none cursor-pointer`}>
+              <option value="">Select a timeline</option>
+              {TIMELINE_OPTIONS.map((t) => (<option key={t.id} value={t.id}>{t.label} ({t.sub})</option>))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
         </div>
       </div>
 
-      {/* ── Message ──────────────────────────────────────────────────────────── */}
       <div>
-        <label htmlFor="message" className={labelClass}>Tell us about your project *</label>
-        <textarea
-          id="message"
-          required
-          rows={5}
-          value={formData.message}
-          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          className={`${inputClass} resize-none`}
-          placeholder="What problem are you trying to solve? What does success look like? The more specific you are, the better we can help."
-        />
+        <label className={labelClass}>Project Brief *</label>
+        <textarea rows={5} name="message" value={formData.message} onChange={handleChange} onBlur={handleBlur} className={`${errors.message && touched.message ? inputErrorClass : inputClass} resize-none`} placeholder="Tell us about the goals, functionality, and current pain points..." />
+        {errors.message && touched.message && <p className={errorMessageClass}><AlertCircle className="w-3 h-3" />{errors.message}</p>}
       </div>
 
-      {/* ── Submit ────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-5 pt-2">
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isSubmitting}
-          className="group relative h-13 px-9 rounded-full bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all duration-200 hover:scale-[1.03] active:scale-95 shadow-lg shadow-primary/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:scale-100 disabled:cursor-not-allowed"
-        >
-          <span className="relative z-10 flex items-center gap-2.5">
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Sending…
-              </>
-            ) : (
-              <>
-                Send Message
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-              </>
-            )}
-          </span>
-          {!isSubmitting && (
-            <span className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" aria-hidden="true" />
-          )}
-        </Button>
+      <Button type="submit" size="lg" disabled={isSubmitting} className="group w-full h-12 rounded-md bg-primary text-primary-foreground font-bold text-sm shadow-md shadow-primary/20 disabled:opacity-60">
+        <span className="flex items-center justify-center gap-2.5">
+          {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" />Sending…</> : <>Send Quote Request <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" /></>}
+        </span>
+      </Button>
 
-        <p className="text-[11px] text-muted-foreground leading-relaxed">
-          We respond within 24 hours on business days.
-          <br />No automated replies. Your info stays private.
-        </p>
-      </div>
-
+      {errors.form && (
+        <div className="p-4 rounded-md bg-red-500/10 border border-red-500/30">
+          <p className="text-sm text-red-500 flex items-center gap-2"><AlertCircle className="w-4 h-4" />{errors.form}</p>
+        </div>
+      )}
     </form>
   );
 }
+
 

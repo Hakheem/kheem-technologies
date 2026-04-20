@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 align="center">Kheem Technologies</h1>
 
-## Getting Started
+Kheem Technologies builds websites and digital solutions that convert. We help businesses and individuals establish, redesign, and elevate their online presence through:
 
-First, run the development server:
+- Modern websites (business, personal, eCommerce, landing pages)
+- Website revamps and redesigns
+- Brand identity, graphic design, and UI/UX
+- Custom web systems and apps (new builds, not legacy fixes)
+
+## What Problems Do We Solve?
+
+- No website? We create one that works for you.
+- Outdated or underperforming site? We redesign for results.
+- Need a new system or eCommerce platform? We build from scratch.
+- Need a strong brand or UI/UX? We design it.
+
+## Who Is This For?
+
+- Businesses and individuals who need a new website or system
+- Anyone looking to revamp or modernize their online presence
+- Startups, entrepreneurs, and established brands ready to grow
+
+## Why Choose Kheem Technologies?
+
+- We focus on conversion, not just code
+- Full-service: design, development, branding, and UI/UX
+- Fast, modern, and scalable solutions
+- Personalized approach for every client
+
+## What Should You Do Here?
+
+1. Decide if you need a new website, a redesign, or a new digital system
+2. Review our work and services
+3. [Contact us](mailto:hello@kheem.io) to start your project
+
+## What You Need to Know Before Starting
+
+- Your business goals and what you want your website/system to achieve
+- The action you want your users to take (buy, contact, sign up, etc.)
+- Your current brand assets (if any) and vision
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Framer Motion, GSAP, Lucide React, Radix UI, Shadcn, and more
+
+## Getting Started (Development)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm run dev
+# or use npm/yarn/bun as you prefer
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Kheem Technologies** — Websites, eCommerce, branding, UI/UX, and digital solutions for businesses and individuals.

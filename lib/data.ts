@@ -4,6 +4,7 @@ export const navLinks = [
   { name: "Our Work", href: "/work" },
   { name: "Pricing", href: "/pricing" },
   { name: "About", href: "/about" },
+  { name: "Contact Us", href: "/contact" },
 ];
 
 export const contactInfo = {
@@ -19,20 +20,20 @@ export const teamMembers = [
     name: "Hector John",
     role: "Lead Developer",
     email: "hakheem.dev@gmail.com",
-    image: "/images/team/hector.png",
-    bio: "Full-stack architect with 8+ years of experience building scalable web applications. Passionate about clean code and performance optimization.",
+    image: "/team/hector.png",
+    bio: "Full-stack architect with years of experience building scalable web applications. Passionate about clean code and performance optimization.",
     socials: {
-      linkedin: "https://linkedin.com/in/johndoe",
+      linkedin: "https://linkedin.com/in/hectorjohn",
       github: "https://github.com/Hakheem",
-      website: "https://hector-john.vercel.app",
-      dribbble: "https://dribbble.com/johndoe",
+      website: "https://hakheem.vercel.app",
+      dribbble: "https://dribbble.com/hakheem",
     },
   },
   {
     name: "Juan Rodriguez",
     role: "UI/UX Designer",
     email: "juan@kheem.tech",
-    image: "/images/team/hector.png",
+    image: "/team/hector.png", 
     bio: "Designer who codes. Creates intuitive interfaces that users love. Specializes in design systems and user research.",
     socials: {
       linkedin: "https://linkedin.com/in/juanrodriguez",
@@ -44,14 +45,49 @@ export const teamMembers = [
     name: "Sarah Chen",
     role: "Project Manager",
     email: "sarah@kheem.tech",
-    image: "/images/team/hector.png",
+    image: "/team/hector.png",
     bio: "Certified Scrum Master ensuring projects ship on time and on budget. Bridge between clients and the technical team.",
     socials: {
       linkedin: "https://linkedin.com/in/sarahchen",
       github: "https://github.com/sarahchen",
     },
   },
+  {
+    name: "Marcus Johnson",
+    role: "Backend Engineer",
+    email: "marcus@kheem.tech",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop", 
+    bio: "Data architecture specialist. Designs robust APIs and microservices that power our high-performance applications securely.",
+    socials: {
+      linkedin: "https://linkedin.com/in/marcusjohnson",
+      github: "https://github.com/marcusjohnson",
+    },
+  },
+  {
+    name: "Elena Rossi",
+    role: "Frontend Developer",
+    email: "elena@kheem.tech",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop", 
+    bio: "React and Next.js enthusiast. Translates complex designs into pixel-perfect, accessible, and highly interactive user interfaces.",
+    socials: {
+      linkedin: "https://linkedin.com/in/elenarossi",
+      dribbble: "https://dribbble.com/elenarossi",
+    },
+  },
+  {
+    name: "David Kim",
+    role: "DevOps Engineer",
+    email: "david@kheem.tech",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop", 
+    bio: "Infrastructure automation expert. Ensures our systems are highly available, scalable, and deployed with zero downtime.",
+    socials: {
+      linkedin: "https://linkedin.com/in/davidkim",
+      github: "https://github.com/davidkim",
+    },
+  },
 ];
+
+
 
 export const socialLinks = [
   { name: "LinkedIn", url: "https://linkedin.com/company/kheem", icon: "Linkedin" },

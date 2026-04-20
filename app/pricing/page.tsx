@@ -395,13 +395,12 @@ export default function PricingPage() {
               <Link href="/quote">
                 <Button
                   size="lg"
-                  className="group relative h-13 px-8 rounded-full bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all hover:scale-[1.03] active:scale-95 shadow-lg shadow-primary/20"
+                  className="group relative h-13 px-8 rounded-md bg-primary text-primary-foreground font-bold text-sm overflow-hidden transition-all hover:scale-[1.02] active:scale-98 shadow-md shadow-primary/20"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Get a Free Quote
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                   </span>
-                  <span className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" aria-hidden="true" />
                 </Button>
               </Link>
               <Link href="/contact"

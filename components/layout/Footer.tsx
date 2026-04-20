@@ -1,13 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import Link from "next/link";
+import { motion, useInView, Variants } from "framer-motion";
 import { Logo } from "@/components/general/logo";
 import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const footerLinks = {
   services: [
@@ -40,72 +37,25 @@ const socialLinks = [
   { label: "Dribbble", href: "#" },
 ];
 
+const fadeUpVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const fadeInVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate CTA if it exists
-      if (ctaRef.current) {
-        gsap.fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: ctaRef.current,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
-      // Animate footer columns if they exist
-      const footerCols = document.querySelectorAll('.footer-col');
-      if (footerCols.length > 0 && contentRef.current) {
-        gsap.fromTo(
-          footerCols,
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: contentRef.current,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
-      // Animate footer bottom if it exists
-      const footerBottom = document.querySelector('.footer-bottom');
-      if (footerBottom) {
-        gsap.fromTo(
-          footerBottom,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 0.6,
-            delay: 0.4,
-            scrollTrigger: {
-              trigger: footerBottom,
-              start: "top 95%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
-    }, footerRef);
-    return () => ctx.revert();
-  }, []);
+  const isCtaInView = useInView(ctaRef, { once: true, amount: 0.3 });
+  const isContentInView = useInView(contentRef, { once: true, amount: 0.1 });
+  const isBottomInView = useInView(bottomRef, { once: true, amount: 0.5 });
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -117,18 +67,22 @@ export function Footer() {
       className="relative bg-background text-foreground overflow-hidden"
     >
       {/* Background gradient using your colors */}
-      <div className="absolute inset-0 bg-gradient-to-b from-secondary to-background pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-secondary to-background pointer-events-none" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-violet/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10">
-
-
         {/* Main Footer Content */}
         <div ref={contentRef} className="container mx-auto px-6 py-16 md:py-20">
           <div className="grid grid-cols-2 md:grid-cols-12 gap-8 md:gap-12">
             {/* Brand Column */}
-            <div className="col-span-2 md:col-span-4 footer-col">
+            <motion.div
+              className="col-span-2 md:col-span-4"
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate={isContentInView ? "visible" : "hidden"}
+              transition={{ delay: 0 }}
+            >
               <div className="mb-6">
                 <Logo className="h-10 w-auto text-foreground" />
               </div>
@@ -157,10 +111,16 @@ export function Footer() {
                   <span>Nairobi, Kenya<br />Remote Worldwide</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Services Column */}
-            <div className="col-span-1 md:col-span-2 footer-col">
+            <motion.div
+              className="col-span-1 md:col-span-2"
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate={isContentInView ? "visible" : "hidden"}
+              transition={{ delay: 0.1 }}
+            >
               <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6">
                 Services
               </h4>
@@ -176,10 +136,16 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* Company Column */}
-            <div className="col-span-1 md:col-span-2 footer-col">
+            <motion.div
+              className="col-span-1 md:col-span-2"
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate={isContentInView ? "visible" : "hidden"}
+              transition={{ delay: 0.2 }}
+            >
               <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6">
                 Company
               </h4>
@@ -195,10 +161,16 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* Resources Column */}
-            <div className="col-span-1 md:col-span-2 footer-col">
+            <motion.div
+              className="col-span-1 md:col-span-2"
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate={isContentInView ? "visible" : "hidden"}
+              transition={{ delay: 0.3 }}
+            >
               <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6">
                 Resources
               </h4>
@@ -214,10 +186,16 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
             {/* Social Column */}
-            <div className="col-span-1 md:col-span-2 footer-col">
+            <motion.div
+              className="col-span-1 md:col-span-2"
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate={isContentInView ? "visible" : "hidden"}
+              transition={{ delay: 0.4 }}
+            >
               <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6">
                 Connect
               </h4>
@@ -236,12 +214,19 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="footer-bottom border-t border-border">
+        <motion.div
+          ref={bottomRef}
+          className="footer-bottom border-t border-border"
+          variants={fadeInVariants}
+          initial="hidden"
+          animate={isBottomInView ? "visible" : "hidden"}
+          transition={{ delay: 0.2 }}
+        >
           <div className="container mx-auto px-6 py-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-muted-foreground text-xs font-medium tracking-wider">
@@ -270,9 +255,8 @@ export function Footer() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );
 }
-

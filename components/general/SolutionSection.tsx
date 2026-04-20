@@ -290,7 +290,7 @@ export function SolutionSection() {
       ref={ref}
       className="relative py-20 md:py-24 overflow-hidden bg-background"
       aria-labelledby="solution-heading"
-    >
+    > 
       {/* Ambient primary glow — right */}
       <div
         className="absolute top-1/3 -right-40 w-[560px] h-[560px] rounded-full pointer-events-none"
